@@ -23,9 +23,13 @@ def fetch_tmdb_details(tmdb_id):
         print(f"Timeout hoặc lỗi khi gọi API cho tmdbId={tmdb_id}: {e}")
         return {'overview': '', 'genres': '', 'tagline': ''}
 
-def load_tmdb_data(links_file, cache_file='tmdb_cache.csv'):
+def load_tmdb_data(links_file, cache_file='tmdb_cache.csv', limit=20):
     """Lấy dữ liệu TMDb từ API và lưu cache."""
     links = pd.read_csv(links_file)
+    links = links.dropna(subset=['tmdbId'])  # Loại bỏ các dòng có tmdbId là NaN
+    links = links[links['tmdbId'].apply(lambda x: str(x).isdigit())]  # Giữ lại các dòng có tmdbId là số
+    links = links.head(limit)  # Giới hạn số dòng để thử nghiệm
+
     if os.path.exists(cache_file):
         print("Đang tải dữ liệu từ cache...")
         tmdb_df = pd.read_csv(cache_file)
@@ -33,7 +37,8 @@ def load_tmdb_data(links_file, cache_file='tmdb_cache.csv'):
         print("Đang gọi API TMDb...")
         tmdb_details = []
         for _, row in links.iterrows():
-            details = fetch_tmdb_details(row['tmdbId'])
+            tmdb_id = int(row['tmdbId'])  # Chuyển tmdbId thành số nguyên
+            details = fetch_tmdb_details(tmdb_id)
             tmdb_details.append(details)
         tmdb_df = pd.DataFrame(tmdb_details)
         tmdb_df.to_csv(cache_file, index=False)
