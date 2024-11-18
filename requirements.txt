@@ -1,4 +1,8 @@
 pandas
+numpy
+matplotlib
+seaborn
 scikit-learn
-surprise
+scikit-surprise
 requests
+ipywidgets
