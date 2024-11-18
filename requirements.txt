@@ -6,3 +6,4 @@ scikit-learn
 scikit-surprise
 requests
 ipywidgets
+jupyter
